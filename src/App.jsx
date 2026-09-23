@@ -135,7 +135,7 @@ function MainApp() {
       <Routes>
         <Route path="/" element={<Home busqueda={busqueda} setBusqueda={setBusqueda} productosFiltradosPorBusqueda={productosFiltradosPorBusqueda} productos={productos} agregarAlCarrito={agregarAlCarrito} />} />
         <Route path="/contacto" element={<Contacto />} />
-        {/* NUEVA RUTA DINÁMICA */}
+        {/* NUEVA RUTA DINÁMICAA */}
         <Route path="/categoria/:id" element={<Categoria productos={productos} agregarAlCarrito={agregarAlCarrito} />} />
       </Routes>
       
