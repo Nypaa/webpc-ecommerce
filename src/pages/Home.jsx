@@ -1,18 +1,14 @@
 import { useState } from 'react';
 import { ShoppingCart, Zap, Package } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqueda, productos, agregarAlCarrito }) {
-  
-  // NUEVO: Estado local exclusivo para la vitrina del Home
+  const navigate = useNavigate();
   const [filtroLocal, setFiltroLocal] = useState('Todas');
-  
   const categoriasPrincipales = ["Todas", "Procesadores", "Tarjetas Gráficas", "Placas Madre", "Memoria RAM", "Monitores"];
 
-  // LOGICA INTELIGENTE: 
-  // Si el usuario escribe en el buscador, mostramos sus resultados sin límite.
-  // Si el buscador está vacío, mostramos la vitrina con el filtro local (chips) y límite de 12.
   const hayBusqueda = busqueda.trim() !== '';
-  
+
   const vitrinaEscaparate = productos
     .filter(p => filtroLocal === 'Todas' || p.categoria === filtroLocal)
     .slice(0, 12);
@@ -21,7 +17,6 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
 
   return (
     <main style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto', boxSizing: 'border-box' }}>
-      
       {!hayBusqueda && (
         <div style={{ width: '100%', boxSizing: 'border-box', height: '350px', background: 'linear-gradient(135deg, #111 0%, #002222 100%)', borderRadius: '12px', display: 'flex', alignItems: 'center', padding: '0 50px', marginBottom: '50px', border: '1px solid #222', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', right: '-50px', top: '-50px', width: '350px', height: '350px', backgroundColor: '#00e5ff', filter: 'blur(150px)', opacity: '0.15', borderRadius: '50%' }}></div>
@@ -42,7 +37,6 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
         </div>
       )}
 
-      {/* CABECERA DINÁMICA CON CHIPS */}
       <div style={{ marginBottom: '30px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ margin: 0, color: '#fff', fontSize: '24px', display: 'inline-block', borderBottom: '3px solid #00e5ff', paddingBottom: '10px' }}>
@@ -55,7 +49,6 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
           )}
         </div>
 
-        {/* LOS BOTONES DE FILTRO (CHIPS) - Solo se muestran si no hay búsqueda */}
         {!hayBusqueda && (
           <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
             {categoriasPrincipales.map(cat => (
@@ -83,7 +76,10 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
         ) : (
           productosAMostrar.map((producto) => (
             <div key={producto.id} style={{ backgroundColor: '#141414', border: '1px solid #222', borderRadius: '10px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div style={{ width: '100%', height: '200px', backgroundColor: '#1a1a1a', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '15px', overflow: 'hidden' }}>
+              <div 
+                onClick={() => navigate('/producto/' + producto.id)}
+                style={{ width: '100%', height: '200px', backgroundColor: '#1a1a1a', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '15px', overflow: 'hidden', cursor: 'pointer' }}
+              >
                 {producto.imagen_url ? <img src={producto.imagen_url} alt={producto.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <Package size={48} color="#333" />}
               </div>
               <div>
