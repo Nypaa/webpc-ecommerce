@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+// ...tus otros imports
+import Login from './pages/Login';
+import Admin from './pages/Admin';
 import { Menu, Search, MapPin, ShoppingCart, MessageCircle, X, ChevronRight, Trash2, Plus, Minus, FileDown } from 'lucide-react';
 import { supabase } from './supabase'; 
 import jsPDF from 'jspdf';
@@ -22,14 +25,30 @@ function MainApp() {
   
   const [carrito, setCarrito] = useState([]);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
+  const [session, setSession] = useState(null);
+  const [mensajeToast, setMensajeToast] = useState(null);
 
+
+  // 1. Convertimos la carga en una función global y ordenamos los productos nuevos primero
+  const cargarProductos = async () => {
+    const { data, error } = await supabase.from('productos').select('*').order('id', { ascending: false });
+    if (error) console.error("Error al cargar:", error);
+    else setProductos(data);
+  };
+
+  // 2. El useEffect ahora solo "llama" a la función al iniciar
   useEffect(() => {
-    async function cargarProductos() {
-      const { data, error } = await supabase.from('productos').select('*');
-      if (error) console.error("Error al cargar:", error);
-      else setProductos(data);
-    }
     cargarProductos();
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const categorias = [
@@ -49,8 +68,17 @@ function MainApp() {
     const itemExistente = carrito.find(item => item.id === producto.id);
     if (itemExistente) {
       setCarrito(carrito.map(item => item.id === producto.id ? { ...item, cantidad: (parseInt(item.cantidad) || 0) + 1 } : item));
-    } else setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+    } else {
+      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+    }
+    
+    // Lógica de la notificación
+    setMensajeToast(`✅ ${producto.nombre} agregado al carrito`);
+    setTimeout(() => {
+      setMensajeToast(null);
+    }, 3000); // El cartel desaparece solo a los 3 segundos
   };
+
   const restarDelCarrito = (id) => setCarrito(carrito.map(item => item.id === id && item.cantidad > 1 ? { ...item, cantidad: parseInt(item.cantidad) - 1 } : item));
   const editarCantidad = (id, valor) => setCarrito(carrito.map(item => item.id === id ? { ...item, cantidad: valor === '' ? '' : parseInt(valor) || 1 } : item));
   const eliminarDelCarrito = (id) => setCarrito(carrito.filter(item => item.id !== id));
@@ -155,14 +183,23 @@ function MainApp() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
-          <span onClick={() => { navigate('/contacto'); window.scrollTo(0,0); }} style={{ cursor: 'pointer', fontSize: '15px', fontWeight: '500', color: window.location.pathname === '/contacto' ? '#00e5ff' : '#ccc' }}>Contacto</span>
+          
+          {/* ESCUDO INVISIBLE QUE ATRAPA LOS CLICS AFUERA */}
+          {(mostrarCarrito || mostrarUbicaciones) && (
+            <div 
+              onClick={() => { setMostrarCarrito(false); setMostrarUbicaciones(false); }}
+              style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 3500 }}
+            />
+          )}
+
+          <span onClick={() => { navigate('/contacto'); window.scrollTo(0,0); }} style={{ cursor: 'pointer', fontSize: '15px', fontWeight: '500', color: window.location.pathname === '/contacto' ? '#00e5ff' : '#ccc', position: 'relative', zIndex: 4000 }}>Contacto</span>
           
           {/* BOTÓN Y MENÚ DE UBICACIÓN */}
-          <div style={{ position: 'relative' }}>
+          <div style={{ position: 'relative', zIndex: 4000 }}>
             <MapPin style={{ cursor: 'pointer', color: '#00e5ff' }} size={24} onClick={() => { setMostrarUbicaciones(!mostrarUbicaciones); setMostrarCarrito(false); }} />
             
             {mostrarUbicaciones && (
-              <div style={{ position: 'absolute', top: '40px', right: '-50px', backgroundColor: '#1f1f1f', border: '1px solid #333', borderRadius: '8px', padding: '15px', width: '280px', zIndex: 4000, boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+              <div style={{ position: 'absolute', top: '40px', right: '-50px', backgroundColor: '#1f1f1f', border: '1px solid #333', borderRadius: '8px', padding: '15px', width: '280px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                 <h4 style={{ margin: '0 0 15px 0', color: '#fff', borderBottom: '1px solid #333', paddingBottom: '10px' }}>Nuestras Sucursales</h4>
                 
                 <div style={{ marginBottom: '15px' }}>
@@ -189,7 +226,7 @@ function MainApp() {
           </div>
           
           {/* BOTÓN Y MENÚ DEL CARRITO */}
-          <div style={{ position: 'relative' }}>
+          <div style={{ position: 'relative', zIndex: 4000 }}>
             <div style={{ cursor: 'pointer', position: 'relative' }} onClick={() => { setMostrarCarrito(!mostrarCarrito); setMostrarUbicaciones(false); }}>
               <ShoppingCart style={{ color: '#00e5ff' }} size={26} />
               {cantidadTotalCarrito > 0 && (
@@ -200,7 +237,7 @@ function MainApp() {
             </div>
             
             {mostrarCarrito && (
-              <div style={{ position: 'absolute', top: '40px', right: '0', backgroundColor: '#141414', border: '1px solid #00e5ff', borderRadius: '8px', padding: '20px', width: '350px', zIndex: 4000, boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+              <div style={{ position: 'absolute', top: '40px', right: '0', backgroundColor: '#141414', border: '1px solid #00e5ff', borderRadius: '8px', padding: '20px', width: '350px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
                   <h3 style={{ margin: 0, color: '#fff' }}>Tu Carrito</h3>
                   <X style={{ cursor: 'pointer', color: '#aaa' }} size={20} onClick={() => setMostrarCarrito(false)} />
@@ -286,9 +323,31 @@ function MainApp() {
         {/* NUEVA RUTA DINÁMICAA */}
         <Route path="/categoria/:id" element={<Categoria productos={productos} agregarAlCarrito={agregarAlCarrito} />} />
       <Route path="/producto/:id" element={<ProductoDetalle productos={productos} agregarAlCarrito={agregarAlCarrito} />} />
-      
+      <Route path="/login" element={session ? <Navigate to="/admin" /> : <Login />} />
+     <Route path="/admin" element={session ? <Admin productos={productos} recargarProductos={cargarProductos} /> : <Navigate to="/login" />} />
       </Routes>
       
+      {mensajeToast && (
+        <div style={{
+          position: 'fixed',
+          bottom: '30px',
+          right: '30px',
+          backgroundColor: '#00e5ff',
+          color: '#000',
+          padding: '15px 25px',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          fontSize: '15px',
+          boxShadow: '0 10px 30px rgba(0, 229, 255, 0.3)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
+        }}>
+          {mensajeToast}
+        </div>
+      )}
+
     </div>
   );
 }
