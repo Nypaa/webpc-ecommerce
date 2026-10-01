@@ -23,7 +23,11 @@ function MainApp() {
   
   const [busqueda, setBusqueda] = useState(''); // El buscador es el único filtro global ahora
   
-  const [carrito, setCarrito] = useState([]);
+  // Al iniciar, preguntamos si hay un carrito guardado en el navegador. Si no hay, iniciamos vacío.
+  const [carrito, setCarrito] = useState(() => {
+    const carritoGuardado = localStorage.getItem('carritoGamer');
+    return carritoGuardado ? JSON.parse(carritoGuardado) : [];
+  });
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
   const [session, setSession] = useState(null);
   const [mensajeToast, setMensajeToast] = useState(null);
@@ -31,10 +35,19 @@ function MainApp() {
 
   // 1. Convertimos la carga en una función global y ordenamos los productos nuevos primero
   const cargarProductos = async () => {
-    const { data, error } = await supabase.from('productos').select('*').order('id', { ascending: false });
+    // CAMBIAMOS .order('id') POR .order('created_at')
+    const { data, error } = await supabase
+      .from('productos')
+      .select('*')
+      .order('created_at', { ascending: false });
+      
     if (error) console.error("Error al cargar:", error);
     else setProductos(data);
   };
+  useEffect(() => {
+    // Cada vez que 'carrito' cambie, lo guardamos convertido en texto
+    localStorage.setItem('carritoGamer', JSON.stringify(carrito));
+  }, [carrito]);
 
   // 2. El useEffect ahora solo "llama" a la función al iniciar
   useEffect(() => {
@@ -135,7 +148,7 @@ function MainApp() {
     
     carrito.forEach(item => {
       // Usamos un guion normal en lugar del símbolo especial
-      lineas.push("- " + item.cantidad + "x " + item.nombre + " - Bs. " + (item.precio * item.cantidad));
+      lineas.push("- " + item.cantidad + "x " + item.nombre + " - Bs. " + (Number(item.precio) * Number(item.cantidad)));
     });
     
     lineas.push(""); // Salto de línea
@@ -153,8 +166,7 @@ function MainApp() {
   };
   
   const cantidadTotalCarrito = carrito.reduce((total, item) => total + (parseInt(item.cantidad) || 0), 0);
-  const precioTotalCarrito = carrito.reduce((total, item) => total + (item.precio * (parseInt(item.cantidad) || 0)), 0);
-
+  const precioTotalCarrito = carrito.reduce((total, item) => total + (Number(item.precio) * (Number(item.cantidad) || 0)), 0);
   const irAlInicio = () => {
     setBusqueda('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -171,7 +183,7 @@ function MainApp() {
       
       <header style={{ position: 'sticky', top: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 30px', backgroundColor: '#141414', borderBottom: '1px solid #222' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <Menu style={{ cursor: 'pointer', color: '#00e5ff' }} size={28} onClick={() => setMostrarMenu(true)} />
+          <Menu style={{ cursor: 'pointer', color: '#00e5ff' }} size={28} onClick={() => { setMostrarMenu(true); setMostrarCarrito(false); setMostrarUbicaciones(false); }} />
           <h2 onClick={irAlInicio} style={{ margin: 0, color: '#ffffff', letterSpacing: '1px', fontSize: '24px', cursor: 'pointer' }}>
             web<span style={{ color: '#00e5ff' }}>PC</span>
           </h2>
@@ -199,7 +211,7 @@ function MainApp() {
             <MapPin style={{ cursor: 'pointer', color: '#00e5ff' }} size={24} onClick={() => { setMostrarUbicaciones(!mostrarUbicaciones); setMostrarCarrito(false); }} />
             
             {mostrarUbicaciones && (
-              <div style={{ position: 'absolute', top: '40px', right: '-50px', backgroundColor: '#1f1f1f', border: '1px solid #333', borderRadius: '8px', padding: '15px', width: '280px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+              <div style={{ position: 'absolute', top: '40px', right: '-50px', backgroundColor: '#1f1f1f', border: '1px solid #333', borderRadius: '8px', padding: '15px', width: '90vw', maxWidth: '280px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                 <h4 style={{ margin: '0 0 15px 0', color: '#fff', borderBottom: '1px solid #333', paddingBottom: '10px' }}>Nuestras Sucursales</h4>
                 
                 <div style={{ marginBottom: '15px' }}>
@@ -236,8 +248,8 @@ function MainApp() {
               )}
             </div>
             
-            {mostrarCarrito && (
-              <div style={{ position: 'absolute', top: '40px', right: '0', backgroundColor: '#141414', border: '1px solid #00e5ff', borderRadius: '8px', padding: '20px', width: '350px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+              {mostrarCarrito && (
+              <div style={{ position: 'absolute', top: '40px', right: '0', backgroundColor: '#141414', border: '1px solid #00e5ff', borderRadius: '8px', padding: '20px', width: '90vw', maxWidth: '350px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
                   <h3 style={{ margin: 0, color: '#fff' }}>Tu Carrito</h3>
                   <X style={{ cursor: 'pointer', color: '#aaa' }} size={20} onClick={() => setMostrarCarrito(false)} />
@@ -258,7 +270,7 @@ function MainApp() {
                           </div>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '5px' }}>
-                          <span style={{ color: '#00e5ff', fontWeight: 'bold' }}>Bs. {item.precio * item.cantidad}</span>
+                          <span style={{ color: '#00e5ff', fontWeight: 'bold' }}>Bs. {Number(item.precio) * Number(item.cantidad)}</span>
                           <Trash2 style={{ cursor: 'pointer', color: '#e60000' }} size={16} onClick={() => eliminarDelCarrito(item.id)} />
                         </div>
                       </div>
@@ -296,21 +308,30 @@ function MainApp() {
               <X style={{ cursor: 'pointer', color: '#aaa' }} size={24} onClick={() => setMostrarMenu(false)} />
             </div>
             <div style={{ padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {categorias.map((cat, index) => (
-                <div 
-                  key={index} 
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '10px', borderBottom: '1px solid #222', color: window.location.pathname === `/categoria/${cat}` ? '#00e5ff' : '#ccc' }} 
-                  onClick={() => { 
-                    setMostrarMenu(false); 
-                    setBusqueda(''); 
-                    navigate(`/categoria/${cat}`); // NAVEGACIÓN REAL
-                    window.scrollTo(0,0);
-                  }}
-                >
-                  <span style={{ fontSize: '15px', fontWeight: window.location.pathname === `/categoria/${cat}` ? 'bold' : 'normal' }}>{cat}</span>
-                  {window.location.pathname === `/categoria/${cat}` && <ChevronRight size={16} style={{ color: '#00e5ff' }} />}
-                </div>
-              ))}
+              {categorias.map((cat, index) => {
+                // Usamos el signo + con comillas simples normales para evitar errores de sintaxis
+                const rutaSegura = '/categoria/' + encodeURIComponent(cat);
+                
+                return (
+                  <div 
+                    key={index} 
+                    style={{ 
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '10px', 
+                      borderBottom: '1px solid #222', 
+                      color: window.location.pathname === rutaSegura ? '#00e5ff' : '#ccc' 
+                    }} 
+                    onClick={() => { 
+                      setMostrarMenu(false); 
+                      setBusqueda(''); 
+                      navigate(rutaSegura); 
+                      window.scrollTo(0,0);
+                    }}
+                  >
+                    <span style={{ fontSize: '15px', fontWeight: window.location.pathname === rutaSegura ? 'bold' : 'normal' }}>{cat}</span>
+                    {window.location.pathname === rutaSegura && <ChevronRight size={16} style={{ color: '#00e5ff' }} />}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

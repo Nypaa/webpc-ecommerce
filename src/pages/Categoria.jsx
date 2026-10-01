@@ -3,7 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Package, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Categoria({ productos, agregarAlCarrito }) {
+  // En tu Categoria.jsx, reemplaza la obtención del id:
   const { id } = useParams();
+  const categoriaSeleccionada = decodeURIComponent(id); 
+
+  // Luego usas categoriaSeleccionada para filtrar tus productos
   const navigate = useNavigate();
   const [paginaActual, setPaginaActual] = useState(1);
   const productosPorPagina = 12;
