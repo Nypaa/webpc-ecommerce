@@ -17,7 +17,7 @@ export default function Admin({ productos, recargarProductos }) {
   const productosPorPagina = 15;
 
   const [formData, setFormData] = useState({
-    nombre: '', marca: '', categoria: 'Procesadores', precio: '', estado_stock: 'Disponible', imagen_url: ''
+    nombre: '', marca: '', categoria: 'Procesadores', precio: '', estado_stock: 'Disponible', imagen_url: '', descripcion: ''
   });
 
   const categorias = ["Procesadores", "Tarjetas Gráficas", "Placas Madre", "Memoria RAM", "Almacenamiento", "Fuentes de Poder", "Case / Gabinetes", "Monitores", "Periféricos"];
@@ -38,7 +38,8 @@ export default function Admin({ productos, recargarProductos }) {
   const abrirFormularioEditar = (producto) => {
     setFormData({
       nombre: producto.nombre, marca: producto.marca, categoria: producto.categoria, 
-      precio: producto.precio, estado_stock: producto.estado_stock, imagen_url: producto.imagen_url || ''
+      precio: producto.precio, estado_stock: producto.estado_stock, imagen_url: producto.imagen_url || '',
+      descripcion: producto.descripcion || ''
     });
     setImagenArchivo(null);
     setEditandoId(producto.id);
@@ -72,7 +73,7 @@ export default function Admin({ productos, recargarProductos }) {
 
     const datosGuardar = {
       nombre: formData.nombre, marca: formData.marca, categoria: formData.categoria,
-      precio: parseFloat(formData.precio), estado_stock: formData.estado_stock, imagen_url: urlImagenFinal
+      precio: parseFloat(formData.precio), estado_stock: formData.estado_stock, imagen_url: urlImagenFinal, descripcion: formData.descripcion
     };
 
     if (editandoId) {
@@ -148,15 +149,53 @@ export default function Admin({ productos, recargarProductos }) {
                 <option value="Disponible">Disponible</option><option value="Poco Stock">Poco Stock</option><option value="Agotado">Agotado</option>
               </select>
             </div>
-            <div>
-              <label style={{ color: '#aaa', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}><Upload size={14} /> Subir Imagen</label>
-              <input type="file" accept="image/*" onChange={(e) => {
-                const archivo = e.target.files[0];
-                if (archivo && archivo.size > 2 * 1024 * 1024) { alert("⚠️ Máx 2MB."); e.target.value = ''; setImagenArchivo(null); } 
-                else { setImagenArchivo(archivo); }
-              }} style={{ width: '100%', padding: '7px', backgroundColor: '#141414', border: '1px solid #333', color: '#fff', borderRadius: '6px', outline: 'none' }} />
-              {formData.imagen_url && !imagenArchivo && <div style={{ marginTop: '5px', fontSize: '12px' }}><a href={formData.imagen_url} target="_blank" rel="noreferrer" style={{ color: '#00e5ff' }}>Ver foto guardada</a></div>}
+
+            
+            
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={{ color: '#aaa', fontSize: '13px', display: 'block', marginBottom: '5px' }}>Descripción / Especificaciones</label>
+              <textarea 
+                value={formData.descripcion} 
+                onChange={(e) => setFormData({...formData, descripcion: e.target.value})} 
+                placeholder="Ej: 8GB DDR4 3200MHz, Latencia CL16..."
+                style={{ width: '100%', padding: '10px', backgroundColor: '#141414', border: '1px solid #333', color: '#fff', borderRadius: '6px', outline: 'none', minHeight: '80px', resize: 'vertical', fontFamily: 'inherit' }} 
+              />
             </div>
+
+
+           <div>
+          <label style={{ fontSize: '13px', color: '#aaa', display: 'block', marginBottom: '8px' }}>Subir Imagen</label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-start' }}>
+            <label style={{ 
+              display: 'inline-flex', alignItems: 'center', gap: '8px', 
+              backgroundColor: '#1f1f1f', color: '#fff', border: '1px solid #333', 
+              padding: '10px 15px', borderRadius: '6px', cursor: 'pointer', 
+              fontSize: '14px', transition: 'all 0.2s' 
+            }}>
+              <span style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {imagenArchivo ? '✅ ${imagenArchivo.name}' : '📸 Elegir archivo...'}
+              </span>
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={(e) => setImagenArchivo(e.target.files[0])}
+                style={{ display: 'none' }} 
+              />
+            </label>
+            
+            {/* Aquí recuperamos tu enlace original para ver la foto */}
+            {formData.imagen_url && !imagenArchivo && (
+              <a 
+                href={formData.imagen_url} 
+                target="_blank" 
+                rel="noreferrer" 
+                style={{ fontSize: '12px', color: '#00e5ff', textDecoration: 'underline' }}
+              >
+                Ver foto guardada
+              </a>
+            )}
+          </div>
+        </div>
             <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', gap: '15px', marginTop: '10px' }}>
               <button type="button" onClick={() => setMostrarFormulario(false)} style={{ padding: '10px 20px', backgroundColor: 'transparent', color: '#aaa', border: '1px solid #555', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Cancelar</button>
               <button type="submit" disabled={cargando} style={{ padding: '10px 20px', backgroundColor: '#00e5ff', color: '#000', border: 'none', borderRadius: '6px', cursor: cargando ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>

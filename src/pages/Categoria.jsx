@@ -3,25 +3,26 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Package, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Categoria({ productos, agregarAlCarrito }) {
-  // En tu Categoria.jsx, reemplaza la obtención del id:
   const { id } = useParams();
-  const categoriaSeleccionada = decodeURIComponent(id); 
 
-  // Luego usas categoriaSeleccionada para filtrar tus productos
+  // 1. Decodificamos el nombre de la URL de forma segura
+  const categoriaSeleccionada = decodeURIComponent(id);
+
   const navigate = useNavigate();
   const [paginaActual, setPaginaActual] = useState(1);
   const productosPorPagina = 12;
 
-  const productosDeCategoria = productos.filter((producto) => producto.categoria === id);
+  // 2. CORRECCIÓN: Filtramos usando 'categoriaSeleccionada', NO 'id'
+  const productosDeCategoria = productos.filter((producto) => producto.categoria === categoriaSeleccionada);
 
   useEffect(() => {
     setPaginaActual(1);
-  }, [id]);
+  }, [categoriaSeleccionada]); // Actualizamos la página si cambia la categoría
 
   const indiceUltimoProducto = paginaActual * productosPorPagina;
   const indicePrimerProducto = indiceUltimoProducto - productosPorPagina;
   const productosActuales = productosDeCategoria.slice(indicePrimerProducto, indiceUltimoProducto);
-  
+
   const totalPaginas = Math.ceil(productosDeCategoria.length / productosPorPagina);
 
   const irPaginaAnterior = () => {
@@ -39,14 +40,15 @@ export default function Categoria({ productos, agregarAlCarrito }) {
   };
 
   return (
-    <main style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto', boxSizing: 'border-box' }}>
-      
+    <main style={{ padding: '40px 20px', maxWidth: '1400px', margin: '0 auto', boxSizing: 'border-box', minHeight: '80vh' }}>
+
       <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', gap: '20px' }}>
         <button onClick={() => navigate('/')} style={{ backgroundColor: '#1f1f1f', border: '1px solid #333', color: '#fff', padding: '10px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h2 style={{ margin: 0, color: '#fff', fontSize: '32px', letterSpacing: '1px' }}>{id}</h2>
+          {/* 3. CORRECCIÓN: Mostramos el nombre decodificado en el título */}
+          <h2 style={{ margin: 0, color: '#fff', fontSize: '32px', letterSpacing: '1px' }}>{categoriaSeleccionada}</h2>
           <p style={{ margin: '5px 0 0 0', color: '#888', fontSize: '14px' }}>{productosDeCategoria.length} productos disponibles</p>
         </div>
       </div>
@@ -57,7 +59,7 @@ export default function Categoria({ productos, agregarAlCarrito }) {
         ) : (
           productosActuales.map((producto) => (
             <div key={producto.id} style={{ backgroundColor: '#141414', border: '1px solid #222', borderRadius: '10px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div 
+              <div
                 onClick={() => navigate('/producto/' + producto.id)}
                 style={{ width: '100%', height: '200px', backgroundColor: '#1a1a1a', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '15px', overflow: 'hidden', cursor: 'pointer' }}
               >
@@ -69,12 +71,38 @@ export default function Categoria({ productos, agregarAlCarrito }) {
               </div>
               <div>
                 <span style={{ fontSize: '12px', color: '#00e5ff', fontWeight: 'bold', letterSpacing: '1px' }}>{producto.marca}</span>
+                
                 <h4 style={{ margin: '5px 0 10px 0', fontSize: '16px', color: '#fff', lineHeight: '1.4' }}>{producto.nombre}</h4>
-                <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', backgroundColor: producto.estado_stock === 'Disponible' ? 'rgba(0, 255, 85, 0.1)' : 'rgba(255, 170, 0, 0.1)', color: producto.estado_stock === 'Disponible' ? '#00ff55' : '#ffaa00', marginBottom: '15px' }}>{producto.estado_stock}</span>
+                
+                <span style={{ 
+                  display: 'inline-block', 
+                  padding: '3px 8px', 
+                  borderRadius: '4px', 
+                  fontSize: '11px', 
+                  fontWeight: 'bold', 
+                  backgroundColor: producto.estado_stock === 'Disponible' ? 'rgba(0, 255, 85, 0.1)' : producto.estado_stock === 'Poco Stock' ? 'rgba(255, 170, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)', 
+                  color: producto.estado_stock === 'Disponible' ? '#00ff55' : producto.estado_stock === 'Poco Stock' ? '#ffaa00' : '#ff4444', 
+                  marginBottom: '15px' 
+                }}>
+                  {producto.estado_stock}
+                </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
                 <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#fff' }}>Bs. {producto.precio}</span>
-                <button onClick={() => agregarAlCarrito(producto)} style={{ backgroundColor: 'transparent', border: '1px solid #00e5ff', color: '#00e5ff', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.2s' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); agregarAlCarrito(producto); }}
+                  disabled={producto.estado_stock === 'Agotado'}
+                  style={{
+                    backgroundColor: producto.estado_stock === 'Agotado' ? '#222' : 'transparent',
+                    border: '1px solid',
+                    borderColor: producto.estado_stock === 'Agotado' ? '#333' : '#00e5ff',
+                    color: producto.estado_stock === 'Agotado' ? '#555' : '#00e5ff',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    cursor: producto.estado_stock === 'Agotado' ? 'not-allowed' : 'pointer',
+                    display: 'flex', alignItems: 'center', transition: 'all 0.2s'
+                  }}
+                >
                   <ShoppingCart size={18} />
                 </button>
               </div>

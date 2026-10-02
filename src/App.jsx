@@ -16,7 +16,7 @@ import Categoria from './pages/Categoria'; // NUEVA PÁGINA
 
 function MainApp() {
   const navigate = useNavigate();
-
+  const [nombreCliente, setNombreCliente] = useState('');
   const [mostrarUbicaciones, setMostrarUbicaciones] = useState(false);
   const [mostrarMenu, setMostrarMenu] = useState(false);
   const [productos, setProductos] = useState([]);
@@ -107,6 +107,10 @@ function MainApp() {
     doc.setFontSize(12);
     doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 30);
     
+    if (nombreCliente.trim() !== '') {
+      doc.text(`Cliente: ${nombreCliente}`, 14, 38);
+    }
+    
     // Preparar los datos para la tabla
     const columnas = ["Producto", "Cant.", "Precio Unit.", "Subtotal"];
     const filas = carrito.map(item => [
@@ -120,7 +124,7 @@ function MainApp() {
     autoTable(doc, {
       head: [columnas],
       body: filas,
-      startY: 40,
+      startY: nombreCliente.trim() !== '' ? 45 : 40,
       theme: 'grid',
       styles: { fontSize: 10 },
       headStyles: { fillColor: [0, 229, 255], textColor: [0, 0, 0] }
@@ -139,11 +143,16 @@ function MainApp() {
     if (carrito.length === 0) return;
     
     // IMPORTANTE: Pon tu número real aquí (Ejemplo Bolivia: 59170000000)
-    const numeroTienda = "59100000000"; 
+    const numeroTienda = "59173048045"; 
     
     // 1. Creamos una lista (Array) con cada línea del mensaje
     const lineas = [];
-    lineas.push("Hola, me interesa concretar la compra de la siguiente cotización:");
+    
+    if (nombreCliente.trim() !== '') {
+      lineas.push("Hola, soy *" + nombreCliente + "*. Me interesa concretar la compra de la siguiente cotización:");
+    } else {
+      lineas.push("Hola, me interesa concretar la compra de la siguiente cotización:");
+    }
     lineas.push(""); // Salto de línea
     
     carrito.forEach(item => {
@@ -278,9 +287,19 @@ function MainApp() {
                   </div>
                 )}
                 
-                {carrito.length > 0 && (
+               {carrito.length > 0 && (
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '18px', fontWeight: 'bold', borderTop: '1px solid #333', paddingTop: '15px' }}>
+                    <div style={{ borderTop: '1px solid #333', paddingTop: '15px', marginBottom: '15px' }}>
+                      <label style={{ fontSize: '13px', color: '#aaa', display: 'block', marginBottom: '8px' }}>Tus datos (Opcional):</label>
+                      <input
+                        type="text"
+                        placeholder="Ej. Juan Pérez - La Paz"
+                        value={nombreCliente}
+                        onChange={(e) => setNombreCliente(e.target.value)}
+                        style={{ width: '100%', padding: '10px', backgroundColor: '#1a1a1a', border: '1px solid #333', color: '#fff', borderRadius: '6px', outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '18px', fontWeight: 'bold' }}>
                       <span>Total:</span>
                       <span style={{ color: '#00e5ff' }}>Bs. {precioTotalCarrito}</span>
                     </div>

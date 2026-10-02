@@ -85,11 +85,35 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
               <div>
                 <span style={{ fontSize: '12px', color: '#00e5ff', fontWeight: 'bold', letterSpacing: '1px' }}>{producto.marca}</span>
                 <h4 style={{ margin: '5px 0 10px 0', fontSize: '16px', color: '#fff', lineHeight: '1.4' }}>{producto.nombre}</h4>
-                <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', backgroundColor: producto.estado_stock === 'Disponible' ? 'rgba(0, 255, 85, 0.1)' : 'rgba(255, 170, 0, 0.1)', color: producto.estado_stock === 'Disponible' ? '#00ff55' : '#ffaa00', marginBottom: '15px' }}>{producto.estado_stock}</span>
+                <span style={{ 
+                  display: 'inline-block', 
+                  padding: '3px 8px', 
+                  borderRadius: '4px', 
+                  fontSize: '11px', 
+                  fontWeight: 'bold', 
+                  backgroundColor: producto.estado_stock === 'Disponible' ? 'rgba(0, 255, 85, 0.1)' : producto.estado_stock === 'Poco Stock' ? 'rgba(255, 170, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)', 
+                  color: producto.estado_stock === 'Disponible' ? '#00ff55' : producto.estado_stock === 'Poco Stock' ? '#ffaa00' : '#ff4444', 
+                  marginBottom: '15px' 
+                }}>
+                  {producto.estado_stock}
+                </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
                 <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#fff' }}>Bs. {producto.precio}</span>
-                <button onClick={() => agregarAlCarrito(producto)} style={{ backgroundColor: 'transparent', border: '1px solid #00e5ff', color: '#00e5ff', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); agregarAlCarrito(producto); }} 
+                  disabled={producto.estado_stock === 'Agotado'}
+                  style={{ 
+                    backgroundColor: producto.estado_stock === 'Agotado' ? '#222' : 'transparent', 
+                    border: '1px solid', 
+                    borderColor: producto.estado_stock === 'Agotado' ? '#333' : '#00e5ff', 
+                    color: producto.estado_stock === 'Agotado' ? '#555' : '#00e5ff', 
+                    padding: '8px 12px', 
+                    borderRadius: '6px', 
+                    cursor: producto.estado_stock === 'Agotado' ? 'not-allowed' : 'pointer', 
+                    display: 'flex', alignItems: 'center', transition: 'all 0.2s' 
+                  }}
+                >
                   <ShoppingCart size={18} />
                 </button>
               </div>
