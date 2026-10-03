@@ -31,7 +31,7 @@ export default function Login() {
   return (
     <main style={{ minHeight: '80vh', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
       <div style={{ backgroundColor: '#141414', padding: '40px', borderRadius: '12px', border: '1px solid #222', width: '100%', maxWidth: '400px' }}>
-        <button onClick={() => navigate('/')} style={{ background: 'transparent', border: 'none', color: '#00e5ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', padding: 0 }}>
+        <button onClick={() => navigate('/')} style={{ background: 'transparent', border: 'none', color: '#00ff44', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', padding: 0 }}>
           <ArrowLeft size={18} /> Volver a la tienda
         </button>
         <h2 style={{ color: '#fff', marginTop: 0, marginBottom: '30px', fontSize: '24px' }}>Acceso Administrativo</h2>
@@ -51,7 +51,7 @@ export default function Login() {
             <Lock size={18} color="#888" style={{ position: 'absolute', left: '12px', top: '12px' }} />
             <input type="password" placeholder="Contraseña" required value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', backgroundColor: '#1f1f1f', border: '1px solid #333', color: '#fff', padding: '12px 12px 12px 40px', borderRadius: '8px', outline: 'none', boxSizing: 'border-box' }} />
           </div>
-          <button type="submit" disabled={cargando} style={{ backgroundColor: '#00e5ff', color: '#000', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '16px', cursor: cargando ? 'not-allowed' : 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '10px' }}>
+          <button type="submit" disabled={cargando} style={{ backgroundColor: '#00ff44', color: '#000', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '16px', cursor: cargando ? 'not-allowed' : 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '10px' }}>
             {cargando ? 'Verificando...' : <><LogIn size={20} /> Ingresar al Panel</>}
           </button>
         </form>

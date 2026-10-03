@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-route
 import Login from './pages/Login';
 import Admin from './pages/Admin';
 import { Menu, Search, MapPin, ShoppingCart, MessageCircle, X, ChevronRight, Trash2, Plus, Minus, FileDown } from 'lucide-react';
-import { supabase } from './supabase'; 
+import { supabase } from './supabase';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -20,9 +20,9 @@ function MainApp() {
   const [mostrarUbicaciones, setMostrarUbicaciones] = useState(false);
   const [mostrarMenu, setMostrarMenu] = useState(false);
   const [productos, setProductos] = useState([]);
-  
+
   const [busqueda, setBusqueda] = useState(''); // El buscador es el único filtro global ahora
-  
+
   // Al iniciar, preguntamos si hay un carrito guardado en el navegador. Si no hay, iniciamos vacío.
   const [carrito, setCarrito] = useState(() => {
     const carritoGuardado = localStorage.getItem('carritoGamer');
@@ -40,7 +40,7 @@ function MainApp() {
       .from('productos')
       .select('*')
       .order('created_at', { ascending: false });
-      
+
     if (error) console.error("Error al cargar:", error);
     else setProductos(data);
   };
@@ -65,7 +65,7 @@ function MainApp() {
   }, []);
 
   const categorias = [
-    "Procesadores", "Tarjetas Gráficas", "Placas Madre", "Memoria RAM", 
+    "Procesadores", "Tarjetas Gráficas", "Placas Madre", "Memoria RAM",
     "Almacenamiento", "Fuentes de Poder", "Case / Gabinetes", "Monitores", "Periféricos"
   ];
 
@@ -84,7 +84,7 @@ function MainApp() {
     } else {
       setCarrito([...carrito, { ...producto, cantidad: 1 }]);
     }
-    
+
     // Lógica de la notificación
     setMensajeToast(`✅ ${producto.nombre} agregado al carrito`);
     setTimeout(() => {
@@ -98,19 +98,19 @@ function MainApp() {
 
   const descargarPDF = () => {
     if (carrito.length === 0) return;
-    
+
     const doc = new jsPDF();
-    
+
     // Título y fecha
     doc.setFontSize(22);
     doc.text("Cotización - webPC", 14, 20);
     doc.setFontSize(12);
     doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 30);
-    
+
     if (nombreCliente.trim() !== '') {
       doc.text(`Cliente: ${nombreCliente}`, 14, 38);
     }
-    
+
     // Preparar los datos para la tabla
     const columnas = ["Producto", "Cant.", "Precio Unit.", "Subtotal"];
     const filas = carrito.map(item => [
@@ -119,7 +119,7 @@ function MainApp() {
       `Bs. ${item.precio}`,
       `Bs. ${item.precio * item.cantidad}`
     ]);
-    
+
     // Generar la tabla
     autoTable(doc, {
       head: [columnas],
@@ -129,51 +129,51 @@ function MainApp() {
       styles: { fontSize: 10 },
       headStyles: { fillColor: [0, 229, 255], textColor: [0, 0, 0] }
     });
-    
+
     // Total final
     const finalY = doc.lastAutoTable.finalY || 40;
     doc.setFontSize(14);
     doc.text(`Total a Pagar: Bs. ${precioTotalCarrito}`, 14, finalY + 15);
-    
+
     // Descargar el archivo
     doc.save("Cotizacion_webPC.pdf");
   };
 
   const enviarWhatsApp = () => {
     if (carrito.length === 0) return;
-    
+
     // IMPORTANTE: Pon tu número real aquí (Ejemplo Bolivia: 59170000000)
-    const numeroTienda = "59173048045"; 
-    
+    const numeroTienda = "59173048045";
+
     // 1. Creamos una lista (Array) con cada línea del mensaje
     const lineas = [];
-    
+
     if (nombreCliente.trim() !== '') {
       lineas.push("Hola, soy *" + nombreCliente + "*. Me interesa concretar la compra de la siguiente cotización:");
     } else {
       lineas.push("Hola, me interesa concretar la compra de la siguiente cotización:");
     }
     lineas.push(""); // Salto de línea
-    
+
     carrito.forEach(item => {
       // Usamos un guion normal en lugar del símbolo especial
       lineas.push("- " + item.cantidad + "x " + item.nombre + " - Bs. " + (Number(item.precio) * Number(item.cantidad)));
     });
-    
+
     lineas.push(""); // Salto de línea
     lineas.push("*Total a pagar: Bs. " + precioTotalCarrito + "*");
-    
+
     // 2. Unimos todas las líneas con el salto universal
     const mensajeUnido = lineas.join('\n');
-    
+
     // 3. Lo traducimos a lenguaje de internet
     const textoSeguro = encodeURIComponent(mensajeUnido);
-    
+
     const url = 'https://api.whatsapp.com/send?phone=' + numeroTienda + '&text=' + textoSeguro;
-    
+
     window.open(url, '_blank');
   };
-  
+
   const cantidadTotalCarrito = carrito.reduce((total, item) => total + (parseInt(item.cantidad) || 0), 0);
   const precioTotalCarrito = carrito.reduce((total, item) => total + (Number(item.precio) * (Number(item.cantidad) || 0)), 0);
   const irAlInicio = () => {
@@ -184,86 +184,88 @@ function MainApp() {
 
   const manejarBusqueda = (texto) => {
     setBusqueda(texto);
-    if (window.location.pathname !== '/') navigate('/'); 
+    if (window.location.pathname !== '/') navigate('/');
   };
 
   return (
     <div style={{ backgroundColor: '#0a0a0a', color: '#ffffff', minHeight: '100vh', margin: 0, fontFamily: 'system-ui, sans-serif' }}>
-      
+
       <header style={{ position: 'sticky', top: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 30px', backgroundColor: '#141414', borderBottom: '1px solid #222' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <Menu style={{ cursor: 'pointer', color: '#00e5ff' }} size={28} onClick={() => { setMostrarMenu(true); setMostrarCarrito(false); setMostrarUbicaciones(false); }} />
-          <h2 onClick={irAlInicio} style={{ margin: 0, color: '#ffffff', letterSpacing: '1px', fontSize: '24px', cursor: 'pointer' }}>
-            web<span style={{ color: '#00e5ff' }}>PC</span>
+          <Menu style={{ cursor: 'pointer', color: '#00ff44' }} size={28} onClick={() => { setMostrarMenu(true); setMostrarCarrito(false); setMostrarUbicaciones(false); }} />
+          <h2 onClick={irAlInicio} style={{ margin: 0, color: '#ffffff', letterSpacing: '1px', fontSize: '24px', cursor: 'pointer', fontWeight: 'bold' }}>
+            Kiru<span style={{ color: '#00ff44' }}>Tech</span>
           </h2>
         </div>
-        
+
         <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#1f1f1f', borderRadius: '8px', padding: '8px 15px', width: '45%', border: '1px solid #333' }}>
           <input type="text" placeholder="Buscar productos..." value={busqueda} onChange={(e) => manejarBusqueda(e.target.value)} style={{ backgroundColor: 'transparent', border: 'none', color: '#fff', width: '100%', outline: 'none', fontSize: '15px' }} />
           <Search style={{ color: '#888', cursor: 'pointer' }} size={20} />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
-          
+
           {/* ESCUDO INVISIBLE QUE ATRAPA LOS CLICS AFUERA */}
           {(mostrarCarrito || mostrarUbicaciones) && (
-            <div 
+            <div
               onClick={() => { setMostrarCarrito(false); setMostrarUbicaciones(false); }}
               style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 3500 }}
             />
           )}
 
-          <span onClick={() => { navigate('/contacto'); window.scrollTo(0,0); }} style={{ cursor: 'pointer', fontSize: '15px', fontWeight: '500', color: window.location.pathname === '/contacto' ? '#00e5ff' : '#ccc', position: 'relative', zIndex: 4000 }}>Contacto</span>
-          
+          <span onClick={() => { navigate('/contacto'); window.scrollTo(0, 0); }} style={{ cursor: 'pointer', fontSize: '15px', fontWeight: '500', color: window.location.pathname === '/contacto' ? '#00ff44' : '#ccc', position: 'relative', zIndex: 4000 }}>Contacto</span>
+
           {/* BOTÓN Y MENÚ DE UBICACIÓN */}
           <div style={{ position: 'relative', zIndex: 4000 }}>
-            <MapPin style={{ cursor: 'pointer', color: '#00e5ff' }} size={24} onClick={() => { setMostrarUbicaciones(!mostrarUbicaciones); setMostrarCarrito(false); }} />
-            
+            <MapPin style={{ cursor: 'pointer', color: '#00ff44' }} size={24} onClick={() => { setMostrarUbicaciones(!mostrarUbicaciones); setMostrarCarrito(false); }} />
+
             {mostrarUbicaciones && (
               <div style={{ position: 'absolute', top: '40px', right: '-50px', backgroundColor: '#1f1f1f', border: '1px solid #333', borderRadius: '8px', padding: '15px', width: '90vw', maxWidth: '280px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                 <h4 style={{ margin: '0 0 15px 0', color: '#fff', borderBottom: '1px solid #333', paddingBottom: '10px' }}>Nuestras Sucursales</h4>
-                
+
                 <div style={{ marginBottom: '15px' }}>
-                  <strong style={{ color: '#00e5ff', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <MapPin size={16}/> Sede Central
+                  <strong style={{ color: '#00ff44', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <MapPin size={16} /> Sucursal Principal
                   </strong>
-                  <p style={{ margin: '5px 0 10px 0', fontSize: '13px', color: '#aaa' }}>Av. Principal 123, Ciudad<br/>Lun - Vie: 9:00 a 19:00</p>
+                  <p style={{ margin: '5px 0 10px 0', fontSize: '13px', color: '#aaa' }}>Dirección a definir<br />Horarios de atención</p>
                   <button onClick={() => window.open('https://maps.google.com', '_blank')} style={{ width: '100%', backgroundColor: '#222', color: '#fff', border: '1px solid #444', padding: '6px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
                     Ver en Google Maps
                   </button>
                 </div>
-                
+
                 <div>
-                  <strong style={{ color: '#00e5ff', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <MapPin size={16}/> Sucursal Norte
+                  <strong style={{ color: '#00ff44', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <MapPin size={16} /> Sucursal 2 (Opcional)
                   </strong>
-                  <p style={{ margin: '5px 0 10px 0', fontSize: '13px', color: '#aaa' }}>Centro C. Norte, Local 45<br/>Lun - Sab: 10:00 a 20:00</p>
+                  <p style={{ margin: '5px 0 10px 0', fontSize: '13px', color: '#aaa' }}>Dirección a definir<br />Horarios de atención</p>
                   <button onClick={() => window.open('https://maps.google.com', '_blank')} style={{ width: '100%', backgroundColor: '#222', color: '#fff', border: '1px solid #444', padding: '6px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
                     Ver en Google Maps
                   </button>
                 </div>
+
+                
               </div>
             )}
           </div>
-          
+
           {/* BOTÓN Y MENÚ DEL CARRITO */}
           <div style={{ position: 'relative', zIndex: 4000 }}>
             <div style={{ cursor: 'pointer', position: 'relative' }} onClick={() => { setMostrarCarrito(!mostrarCarrito); setMostrarUbicaciones(false); }}>
-              <ShoppingCart style={{ color: '#00e5ff' }} size={26} />
+              <ShoppingCart style={{ color: '#00ff44' }} size={26} />
               {cantidadTotalCarrito > 0 && (
                 <span style={{ position: 'absolute', top: '-8px', right: '-10px', backgroundColor: '#e60000', color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '12px', fontWeight: 'bold' }}>
                   {cantidadTotalCarrito}
                 </span>
               )}
             </div>
-            
-              {mostrarCarrito && (
-              <div style={{ position: 'absolute', top: '40px', right: '0', backgroundColor: '#141414', border: '1px solid #00e5ff', borderRadius: '8px', padding: '20px', width: '90vw', maxWidth: '350px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+
+            {mostrarCarrito && (
+              <div style={{ position: 'absolute', top: '40px', right: '0', backgroundColor: '#141414', border: '1px solid #00ff44', borderRadius: '8px', padding: '20px', width: '90vw', maxWidth: '350px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
                   <h3 style={{ margin: 0, color: '#fff' }}>Tu Carrito</h3>
                   <X style={{ cursor: 'pointer', color: '#aaa' }} size={20} onClick={() => setMostrarCarrito(false)} />
                 </div>
-                
+
                 {carrito.length === 0 ? (
                   <p style={{ color: '#888', textAlign: 'center', margin: '30px 0' }}>El carrito está vacío</p>
                 ) : (
@@ -279,15 +281,15 @@ function MainApp() {
                           </div>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '5px' }}>
-                          <span style={{ color: '#00e5ff', fontWeight: 'bold' }}>Bs. {Number(item.precio) * Number(item.cantidad)}</span>
+                          <span style={{ color: '#00ff44', fontWeight: 'bold' }}>Bs. {Number(item.precio) * Number(item.cantidad)}</span>
                           <Trash2 style={{ cursor: 'pointer', color: '#e60000' }} size={16} onClick={() => eliminarDelCarrito(item.id)} />
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
-                
-               {carrito.length > 0 && (
+
+                {carrito.length > 0 && (
                   <div>
                     <div style={{ borderTop: '1px solid #333', paddingTop: '15px', marginBottom: '15px' }}>
                       <label style={{ fontSize: '13px', color: '#aaa', display: 'block', marginBottom: '8px' }}>Tus datos (Opcional):</label>
@@ -301,7 +303,7 @@ function MainApp() {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '18px', fontWeight: 'bold' }}>
                       <span>Total:</span>
-                      <span style={{ color: '#00e5ff' }}>Bs. {precioTotalCarrito}</span>
+                      <span style={{ color: '#00ff44' }}>Bs. {precioTotalCarrito}</span>
                     </div>
                     <button onClick={descargarPDF} style={{ width: '100%', backgroundColor: '#333', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                       <FileDown size={18} /> Descargar Proforma
@@ -321,7 +323,7 @@ function MainApp() {
       {mostrarMenu && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 4000, display: 'flex' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setMostrarMenu(false)}></div>
-          <div style={{ position: 'relative', width: '300px', height: '100%', backgroundColor: '#141414', borderRight: '1px solid #00e5ff', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ position: 'relative', width: '300px', height: '100%', backgroundColor: '#141414', borderRight: '1px solid #00ff44', display: 'flex', flexDirection: 'column' }}>
             <div style={{ padding: '20px', borderBottom: '1px solid #222', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ margin: '0', color: '#fff', fontSize: '18px' }}>Categorías</h3>
               <X style={{ cursor: 'pointer', color: '#aaa' }} size={24} onClick={() => setMostrarMenu(false)} />
@@ -330,24 +332,24 @@ function MainApp() {
               {categorias.map((cat, index) => {
                 // Usamos el signo + con comillas simples normales para evitar errores de sintaxis
                 const rutaSegura = '/categoria/' + encodeURIComponent(cat);
-                
+
                 return (
-                  <div 
-                    key={index} 
-                    style={{ 
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '10px', 
-                      borderBottom: '1px solid #222', 
-                      color: window.location.pathname === rutaSegura ? '#00e5ff' : '#ccc' 
-                    }} 
-                    onClick={() => { 
-                      setMostrarMenu(false); 
-                      setBusqueda(''); 
-                      navigate(rutaSegura); 
-                      window.scrollTo(0,0);
+                  <div
+                    key={index}
+                    style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '10px',
+                      borderBottom: '1px solid #222',
+                      color: window.location.pathname === rutaSegura ? '#00ff44' : '#ccc'
+                    }}
+                    onClick={() => {
+                      setMostrarMenu(false);
+                      setBusqueda('');
+                      navigate(rutaSegura);
+                      window.scrollTo(0, 0);
                     }}
                   >
                     <span style={{ fontSize: '15px', fontWeight: window.location.pathname === rutaSegura ? 'bold' : 'normal' }}>{cat}</span>
-                    {window.location.pathname === rutaSegura && <ChevronRight size={16} style={{ color: '#00e5ff' }} />}
+                    {window.location.pathname === rutaSegura && <ChevronRight size={16} style={{ color: '#00ff44' }} />}
                   </div>
                 );
               })}
@@ -362,17 +364,17 @@ function MainApp() {
         <Route path="/contacto" element={<Contacto />} />
         {/* NUEVA RUTA DINÁMICAA */}
         <Route path="/categoria/:id" element={<Categoria productos={productos} agregarAlCarrito={agregarAlCarrito} />} />
-      <Route path="/producto/:id" element={<ProductoDetalle productos={productos} agregarAlCarrito={agregarAlCarrito} />} />
-      <Route path="/login" element={session ? <Navigate to="/admin" /> : <Login />} />
-     <Route path="/admin" element={session ? <Admin productos={productos} recargarProductos={cargarProductos} /> : <Navigate to="/login" />} />
+        <Route path="/producto/:id" element={<ProductoDetalle productos={productos} agregarAlCarrito={agregarAlCarrito} />} />
+        <Route path="/login" element={session ? <Navigate to="/admin" /> : <Login />} />
+        <Route path="/admin" element={session ? <Admin productos={productos} recargarProductos={cargarProductos} /> : <Navigate to="/login" />} />
       </Routes>
-      
+
       {mensajeToast && (
         <div style={{
           position: 'fixed',
           bottom: '30px',
           right: '30px',
-          backgroundColor: '#00e5ff',
+          backgroundColor: '#00ff44',
           color: '#000',
           padding: '15px 25px',
           borderRadius: '8px',
@@ -387,6 +389,12 @@ function MainApp() {
           {mensajeToast}
         </div>
       )}
+
+{/* FOOTER OFICIAL KIRU TECH */}
+      <footer style={{ borderTop: '1px solid #222', padding: '30px 20px', textAlign: 'center', color: '#888', marginTop: '40px', backgroundColor: '#0a0a0a' }}>
+        <p style={{ margin: '0 0 8px 0', fontSize: '15px' }}>© 2026 Kiru Tech. Todos los derechos reservados.</p>
+        <p style={{ fontSize: '13px', margin: 0, color: '#555' }}>Hardware sin límites - Importadores Directos</p>
+      </footer>
 
     </div>
   );

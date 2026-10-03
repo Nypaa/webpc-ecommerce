@@ -11,7 +11,7 @@ export default function ProductoDetalle({ productos, agregarAlCarrito }) {
     return (
       <div style={{ padding: '40px 20px', textAlign: 'center', color: '#fff' }}>
         <h2>Producto no encontrado</h2>
-        <button onClick={() => navigate('/')} style={{ padding: '10px 20px', backgroundColor: '#00e5ff', color: '#000', borderRadius: '6px', cursor: 'pointer', border: 'none', fontWeight: 'bold' }}>Volver al inicio</button>
+        <button onClick={() => navigate('/')} style={{ padding: '10px 20px', backgroundColor: '#00ff44', color: '#000', borderRadius: '6px', cursor: 'pointer', border: 'none', fontWeight: 'bold' }}>Volver al inicio</button>
       </div>
     );
   }
@@ -19,7 +19,7 @@ export default function ProductoDetalle({ productos, agregarAlCarrito }) {
   return (
     <main style={{ padding: 'clamp(15px, 5vw, 40px)', maxWidth: '1200px', margin: '0 auto', boxSizing: 'border-box' }}>
       
-      <button onClick={() => navigate(-1)} style={{ backgroundColor: 'transparent', border: 'none', color: '#00e5ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', marginBottom: 'clamp(20px, 4vw, 30px)', padding: 0 }}>
+      <button onClick={() => navigate(-1)} style={{ backgroundColor: 'transparent', border: 'none', color: '#00ff44', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', marginBottom: 'clamp(20px, 4vw, 30px)', padding: 0 }}>
         <ArrowLeft size={20} /> Volver atrás
       </button>
 
@@ -35,7 +35,7 @@ export default function ProductoDetalle({ productos, agregarAlCarrito }) {
         </div>
 
         <div style={{ flex: '1 1 280px', display: 'flex', flexDirection: 'column' }}>
-          <span style={{ color: '#00e5ff', fontWeight: 'bold', letterSpacing: '1px', fontSize: '14px', marginBottom: '10px' }}>
+          <span style={{ color: '#00ff44', fontWeight: 'bold', letterSpacing: '1px', fontSize: '14px', marginBottom: '10px' }}>
             {producto.categoria} / {producto.marca}
           </span>
           {/* El título se encoge en celulares y crece en PC */}
@@ -50,10 +50,10 @@ export default function ProductoDetalle({ productos, agregarAlCarrito }) {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', padding: '20px 0', borderTop: '1px solid #333', borderBottom: '1px solid #333', marginBottom: '30px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#aaa', fontSize: '15px' }}>
-              <ShieldCheck size={20} color="#00e5ff" style={{ flexShrink: 0 }} /> Garantía oficial de 12 meses
+              <ShieldCheck size={20} color="#00ff44" style={{ flexShrink: 0 }} /> Garantía oficial de 12 meses
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#aaa', fontSize: '15px' }}>
-              <Truck size={20} color="#00e5ff" style={{ flexShrink: 0 }} /> Envíos a nivel nacional 100% seguros
+              <Truck size={20} color="#00ff44" style={{ flexShrink: 0 }} /> Envíos a nivel nacional 100% seguros
             </div>
           </div>
 
@@ -70,7 +70,7 @@ export default function ProductoDetalle({ productos, agregarAlCarrito }) {
             disabled={producto.estado_stock === 'Agotado'}
             style={{ 
               marginTop: 'auto', 
-              backgroundColor: producto.estado_stock === 'Agotado' ? '#333' : '#00e5ff', 
+              backgroundColor: producto.estado_stock === 'Agotado' ? '#333' : '#00ff44', 
               color: producto.estado_stock === 'Agotado' ? '#666' : '#000', 
               border: 'none', 
               padding: '16px 24px', 

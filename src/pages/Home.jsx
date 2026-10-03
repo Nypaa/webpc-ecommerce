@@ -17,29 +17,20 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
 
   return (
     <main style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto', boxSizing: 'border-box' }}>
-      {!hayBusqueda && (
-        <div style={{ width: '100%', boxSizing: 'border-box', height: '350px', background: 'linear-gradient(135deg, #111 0%, #002222 100%)', borderRadius: '12px', display: 'flex', alignItems: 'center', padding: '0 50px', marginBottom: '50px', border: '1px solid #222', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', right: '-50px', top: '-50px', width: '350px', height: '350px', backgroundColor: '#00e5ff', filter: 'blur(150px)', opacity: '0.15', borderRadius: '50%' }}></div>
-          <div style={{ zIndex: 1, maxWidth: '600px' }}>
-            <span style={{ backgroundColor: '#00e5ff', color: '#000', padding: '6px 12px', borderRadius: '4px', fontWeight: 'bold', fontSize: '12px', letterSpacing: '1px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-              <Zap size={14} /> NUEVA TEMPORADA
-            </span>
-            <h1 style={{ fontSize: '48px', margin: '20px 0', color: '#fff', lineHeight: '1.1' }}>
-              Potencia tu <span style={{ color: '#00e5ff' }}>Setup</span> al Máximo Nivel.
-            </h1>
-            <p style={{ color: '#aaa', fontSize: '16px', marginBottom: '30px', lineHeight: '1.6' }}>
-              Descubre las mejores tarjetas gráficas, procesadores y periféricos. Construye la PC de tus sueños.
-            </p>
-            <button onClick={() => window.scrollTo({ top: 500, behavior: 'smooth' })} style={{ backgroundColor: '#00e5ff', color: '#000', border: 'none', padding: '14px 28px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              Ver Catálogo <ShoppingCart size={20} />
-            </button>
-          </div>
+      { !hayBusqueda && (
+        <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', marginBottom: '40px', border: '1px solid #333', backgroundColor: '#0a0a0a' }}>
+          <img 
+            src="https://dugjqlvigojxpzmhiasn.supabase.co/storage/v1/object/public/productos/kirubanner.jpg" 
+            alt="Banner Kiru Tech" 
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
         </div>
       )}
+            
 
       <div style={{ marginBottom: '30px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0, color: '#fff', fontSize: '24px', display: 'inline-block', borderBottom: '3px solid #00e5ff', paddingBottom: '10px' }}>
+          <h3 style={{ margin: 0, color: '#fff', fontSize: '24px', display: 'inline-block', borderBottom: '3px solid #00ff44', paddingBottom: '10px' }}>
             {hayBusqueda ? 'Resultados de búsqueda' : 'Últimos Ingresos'}
           </h3>
           {hayBusqueda && (
@@ -57,7 +48,7 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
                 onClick={() => setFiltroLocal(cat)}
                 style={{
                   padding: '8px 16px', borderRadius: '20px', border: '1px solid #333', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap',
-                  backgroundColor: filtroLocal === cat ? '#00e5ff' : '#141414',
+                  backgroundColor: filtroLocal === cat ? '#00ff44' : '#141414',
                   color: filtroLocal === cat ? '#000' : '#ccc'
                 }}
               >
@@ -83,7 +74,7 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
                 {producto.imagen_url ? <img src={producto.imagen_url} alt={producto.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <Package size={48} color="#333" />}
               </div>
               <div>
-                <span style={{ fontSize: '12px', color: '#00e5ff', fontWeight: 'bold', letterSpacing: '1px' }}>{producto.marca}</span>
+                <span style={{ fontSize: '12px', color: '#00ff44', fontWeight: 'bold', letterSpacing: '1px' }}>{producto.marca}</span>
                 <h4 style={{ margin: '5px 0 10px 0', fontSize: '16px', color: '#fff', lineHeight: '1.4' }}>{producto.nombre}</h4>
                 <span style={{ 
                   display: 'inline-block', 
@@ -106,8 +97,8 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
                   style={{ 
                     backgroundColor: producto.estado_stock === 'Agotado' ? '#222' : 'transparent', 
                     border: '1px solid', 
-                    borderColor: producto.estado_stock === 'Agotado' ? '#333' : '#00e5ff', 
-                    color: producto.estado_stock === 'Agotado' ? '#555' : '#00e5ff', 
+                    borderColor: producto.estado_stock === 'Agotado' ? '#333' : '#00ff44', 
+                    color: producto.estado_stock === 'Agotado' ? '#555' : '#00ff44', 
                     padding: '8px 12px', 
                     borderRadius: '6px', 
                     cursor: producto.estado_stock === 'Agotado' ? 'not-allowed' : 'pointer', 

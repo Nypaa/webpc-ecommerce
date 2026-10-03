@@ -113,10 +113,10 @@ export default function Admin({ productos, recargarProductos }) {
       {/* HEADER (Sin cambios) */}
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '1px solid #333', paddingBottom: '20px', gap: '15px' }}>
         <h1 style={{ color: '#fff', margin: 0, display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
-          <LayoutDashboard size={28} color="#00e5ff" /> Panel de Control
+          <LayoutDashboard size={28} color="#00ff44" /> Panel de Control
         </h1>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button onClick={() => navigate('/')} style={{ backgroundColor: 'transparent', border: '1px solid #00e5ff', color: '#00e5ff', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button onClick={() => navigate('/')} style={{ backgroundColor: 'transparent', border: '1px solid #00ff44', color: '#00ff44', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Eye size={18} /> Ver Tienda
           </button>
           <button onClick={cerrarSesion} style={{ backgroundColor: '#1f1f1f', border: '1px solid #e60000', color: '#e60000', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
@@ -127,7 +127,7 @@ export default function Admin({ productos, recargarProductos }) {
 
       {/* FORMULARIO CRUD (Oculto por defecto) */}
       {mostrarFormulario && (
-        <div style={{ backgroundColor: '#1f1f1f', padding: '25px', borderRadius: '12px', border: '1px solid #00e5ff', marginBottom: '30px', boxShadow: '0 10px 30px rgba(0,229,255,0.1)' }}>
+        <div style={{ backgroundColor: '#1f1f1f', padding: '25px', borderRadius: '12px', border: '1px solid #00ff44', marginBottom: '30px', boxShadow: '0 10px 30px rgba(0,229,255,0.1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
             <h2 style={{ margin: 0, color: '#fff' }}>{editandoId ? 'Editar Producto' : 'Crear Nuevo Producto'}</h2>
             <X size={24} color="#aaa" style={{ cursor: 'pointer' }} onClick={() => setMostrarFormulario(false)} />
@@ -189,7 +189,7 @@ export default function Admin({ productos, recargarProductos }) {
                 href={formData.imagen_url} 
                 target="_blank" 
                 rel="noreferrer" 
-                style={{ fontSize: '12px', color: '#00e5ff', textDecoration: 'underline' }}
+                style={{ fontSize: '12px', color: '#00ff44', textDecoration: 'underline' }}
               >
                 Ver foto guardada
               </a>
@@ -198,7 +198,7 @@ export default function Admin({ productos, recargarProductos }) {
         </div>
             <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', gap: '15px', marginTop: '10px' }}>
               <button type="button" onClick={() => setMostrarFormulario(false)} style={{ padding: '10px 20px', backgroundColor: 'transparent', color: '#aaa', border: '1px solid #555', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Cancelar</button>
-              <button type="submit" disabled={cargando} style={{ padding: '10px 20px', backgroundColor: '#00e5ff', color: '#000', border: 'none', borderRadius: '6px', cursor: cargando ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button type="submit" disabled={cargando} style={{ padding: '10px 20px', backgroundColor: '#00ff44', color: '#000', border: 'none', borderRadius: '6px', cursor: cargando ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Save size={18} /> {cargando ? 'Guardando...' : 'Guardar Producto'}
               </button>
             </div>
@@ -237,7 +237,7 @@ export default function Admin({ productos, recargarProductos }) {
             </div>
           </div>
 
-          <button onClick={abrirFormularioNuevo} style={{ backgroundColor: '#00e5ff', color: '#000', border: 'none', padding: '10px 20px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          <button onClick={abrirFormularioNuevo} style={{ backgroundColor: '#00ff44', color: '#000', border: 'none', padding: '10px 20px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
             <Plus size={18} /> Agregar Nuevo
           </button>
         </div>
@@ -270,7 +270,7 @@ export default function Admin({ productos, recargarProductos }) {
                       </div>
                     </td>
                     <td style={{ padding: '12px 20px', color: '#aaa', fontSize: '13px' }}>{p.categoria}</td>
-                    <td style={{ padding: '12px 20px', color: '#00e5ff', fontWeight: 'bold', fontSize: '14px' }}>Bs. {p.precio}</td>
+                    <td style={{ padding: '12px 20px', color: '#00ff44', fontWeight: 'bold', fontSize: '14px' }}>Bs. {p.precio}</td>
                     <td style={{ padding: '12px 20px' }}>
                       <span style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '4px', fontWeight: 'bold', backgroundColor: p.estado_stock === 'Disponible' ? 'rgba(0, 255, 85, 0.1)' : p.estado_stock === 'Poco Stock' ? 'rgba(255, 170, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)', color: p.estado_stock === 'Disponible' ? '#00ff55' : p.estado_stock === 'Poco Stock' ? '#ffaa00' : '#ff4444' }}>
                         {p.estado_stock}
@@ -278,7 +278,7 @@ export default function Admin({ productos, recargarProductos }) {
                     </td>
                     <td style={{ padding: '12px 20px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                        <button onClick={() => abrirFormularioEditar(p)} style={{ backgroundColor: '#1a1a1a', border: '1px solid #333', color: '#00e5ff', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}><Pencil size={16} /></button>
+                        <button onClick={() => abrirFormularioEditar(p)} style={{ backgroundColor: '#1a1a1a', border: '1px solid #333', color: '#00ff44', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}><Pencil size={16} /></button>
                         <button onClick={() => eliminarProducto(p.id)} style={{ backgroundColor: '#1a1a1a', border: '1px solid #333', color: '#ff4444', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}><Trash2 size={16} /></button>
                       </div>
                     </td>
