@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
-// ...tus otros imports
 import Login from './pages/Login';
 import Admin from './pages/Admin';
 import { Menu, Search, MapPin, ShoppingCart, MessageCircle, X, ChevronRight, Trash2, Plus, Minus, FileDown } from 'lucide-react';
@@ -9,10 +8,9 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 import ProductoDetalle from './pages/ProductoDetalle';
-
 import Home from './pages/Home';
 import Contacto from './pages/Contacto';
-import Categoria from './pages/Categoria'; // NUEVA PÁGINA
+import Categoria from './pages/Categoria';
 
 function MainApp() {
   const navigate = useNavigate();
@@ -21,9 +19,8 @@ function MainApp() {
   const [mostrarMenu, setMostrarMenu] = useState(false);
   const [productos, setProductos] = useState([]);
 
-  const [busqueda, setBusqueda] = useState(''); // El buscador es el único filtro global ahora
+  const [busqueda, setBusqueda] = useState('');
 
-  // Al iniciar, preguntamos si hay un carrito guardado en el navegador. Si no hay, iniciamos vacío.
   const [carrito, setCarrito] = useState(() => {
     const carritoGuardado = localStorage.getItem('carritoGamer');
     return carritoGuardado ? JSON.parse(carritoGuardado) : [];
@@ -32,10 +29,7 @@ function MainApp() {
   const [session, setSession] = useState(null);
   const [mensajeToast, setMensajeToast] = useState(null);
 
-
-  // 1. Convertimos la carga en una función global y ordenamos los productos nuevos primero
   const cargarProductos = async () => {
-    // CAMBIAMOS .order('id') POR .order('created_at')
     const { data, error } = await supabase
       .from('productos')
       .select('*')
@@ -44,12 +38,11 @@ function MainApp() {
     if (error) console.error("Error al cargar:", error);
     else setProductos(data);
   };
+  
   useEffect(() => {
-    // Cada vez que 'carrito' cambie, lo guardamos convertido en texto
     localStorage.setItem('carritoGamer', JSON.stringify(carrito));
   }, [carrito]);
 
-  // 2. El useEffect ahora solo "llama" a la función al iniciar
   useEffect(() => {
     cargarProductos();
 
@@ -69,7 +62,6 @@ function MainApp() {
     "Almacenamiento", "Fuentes de Poder", "Case / Gabinetes", "Monitores", "Periféricos"
   ];
 
-  // Filtro exclusivo para la barra de búsqueda de la cabecera
   const productosFiltradosPorBusqueda = productos.filter((producto) => {
     const termino = busqueda.toLowerCase();
     return producto.nombre.toLowerCase().includes(termino) ||
@@ -85,33 +77,25 @@ function MainApp() {
       setCarrito([...carrito, { ...producto, cantidad: 1 }]);
     }
 
-    // Lógica de la notificación
     setMensajeToast(`✅ ${producto.nombre} agregado al carrito`);
     setTimeout(() => {
       setMensajeToast(null);
-    }, 3000); // El cartel desaparece solo a los 3 segundos
+    }, 3000); 
   };
 
   const restarDelCarrito = (id) => setCarrito(carrito.map(item => item.id === id && item.cantidad > 1 ? { ...item, cantidad: parseInt(item.cantidad) - 1 } : item));
-  const editarCantidad = (id, valor) => setCarrito(carrito.map(item => item.id === id ? { ...item, cantidad: valor === '' ? '' : parseInt(valor) || 1 } : item));
   const eliminarDelCarrito = (id) => setCarrito(carrito.filter(item => item.id !== id));
 
   const descargarPDF = () => {
     if (carrito.length === 0) return;
-
     const doc = new jsPDF();
-
-    // Título y fecha
     doc.setFontSize(22);
-    doc.text("Cotización - webPC", 14, 20);
+    doc.text("Cotización - Kiru Tech", 14, 20);
     doc.setFontSize(12);
     doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 30);
-
     if (nombreCliente.trim() !== '') {
       doc.text(`Cliente: ${nombreCliente}`, 14, 38);
     }
-
-    // Preparar los datos para la tabla
     const columnas = ["Producto", "Cant.", "Precio Unit.", "Subtotal"];
     const filas = carrito.map(item => [
       item.nombre,
@@ -119,63 +103,44 @@ function MainApp() {
       `Bs. ${item.precio}`,
       `Bs. ${item.precio * item.cantidad}`
     ]);
-
-    // Generar la tabla
     autoTable(doc, {
       head: [columnas],
       body: filas,
       startY: nombreCliente.trim() !== '' ? 45 : 40,
       theme: 'grid',
       styles: { fontSize: 10 },
-      headStyles: { fillColor: [0, 229, 255], textColor: [0, 0, 0] }
+      headStyles: { fillColor: [0, 255, 68], textColor: [0, 0, 0] }
     });
-
-    // Total final
     const finalY = doc.lastAutoTable.finalY || 40;
     doc.setFontSize(14);
     doc.text(`Total a Pagar: Bs. ${precioTotalCarrito}`, 14, finalY + 15);
-
-    // Descargar el archivo
-    doc.save("Cotizacion_webPC.pdf");
+    doc.save("Cotizacion_KiruTech.pdf");
   };
 
   const enviarWhatsApp = () => {
     if (carrito.length === 0) return;
-
-    // IMPORTANTE: Pon tu número real aquí (Ejemplo Bolivia: 59170000000)
     const numeroTienda = "59173048045";
-
-    // 1. Creamos una lista (Array) con cada línea del mensaje
     const lineas = [];
-
     if (nombreCliente.trim() !== '') {
       lineas.push("Hola, soy *" + nombreCliente + "*. Me interesa concretar la compra de la siguiente cotización:");
     } else {
       lineas.push("Hola, me interesa concretar la compra de la siguiente cotización:");
     }
-    lineas.push(""); // Salto de línea
-
+    lineas.push(""); 
     carrito.forEach(item => {
-      // Usamos un guion normal en lugar del símbolo especial
       lineas.push("- " + item.cantidad + "x " + item.nombre + " - Bs. " + (Number(item.precio) * Number(item.cantidad)));
     });
-
-    lineas.push(""); // Salto de línea
+    lineas.push(""); 
     lineas.push("*Total a pagar: Bs. " + precioTotalCarrito + "*");
-
-    // 2. Unimos todas las líneas con el salto universal
     const mensajeUnido = lineas.join('\n');
-
-    // 3. Lo traducimos a lenguaje de internet
     const textoSeguro = encodeURIComponent(mensajeUnido);
-
     const url = 'https://api.whatsapp.com/send?phone=' + numeroTienda + '&text=' + textoSeguro;
-
     window.open(url, '_blank');
   };
 
   const cantidadTotalCarrito = carrito.reduce((total, item) => total + (parseInt(item.cantidad) || 0), 0);
   const precioTotalCarrito = carrito.reduce((total, item) => total + (Number(item.precio) * (Number(item.cantidad) || 0)), 0);
+  
   const irAlInicio = () => {
     setBusqueda('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -190,22 +155,26 @@ function MainApp() {
   return (
     <div style={{ backgroundColor: '#0a0a0a', color: '#ffffff', minHeight: '100vh', margin: 0, fontFamily: 'system-ui, sans-serif' }}>
 
-      <header style={{ position: 'sticky', top: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 30px', backgroundColor: '#141414', borderBottom: '1px solid #222' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+      {/* HEADER CON CLASES CSS PARA RESPONSIVE */}
+      <header className="header-principal">
+        
+        {/* 1. Logo y Menú */}
+        <div className="header-logo">
           <Menu style={{ cursor: 'pointer', color: '#00ff44' }} size={28} onClick={() => { setMostrarMenu(true); setMostrarCarrito(false); setMostrarUbicaciones(false); }} />
           <h2 onClick={irAlInicio} style={{ margin: 0, color: '#ffffff', letterSpacing: '1px', fontSize: '24px', cursor: 'pointer', fontWeight: 'bold' }}>
             Kiru<span style={{ color: '#00ff44' }}>Tech</span>
           </h2>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#1f1f1f', borderRadius: '8px', padding: '8px 15px', width: '45%', border: '1px solid #333' }}>
+        {/* 2. Buscador Central */}
+        <div className="header-buscador">
           <input type="text" placeholder="Buscar productos..." value={busqueda} onChange={(e) => manejarBusqueda(e.target.value)} style={{ backgroundColor: 'transparent', border: 'none', color: '#fff', width: '100%', outline: 'none', fontSize: '15px' }} />
           <Search style={{ color: '#888', cursor: 'pointer' }} size={20} />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
+        {/* 3. Iconos y Contacto */}
+        <div className="header-iconos">
 
-          {/* ESCUDO INVISIBLE QUE ATRAPA LOS CLICS AFUERA */}
           {(mostrarCarrito || mostrarUbicaciones) && (
             <div
               onClick={() => { setMostrarCarrito(false); setMostrarUbicaciones(false); }}
@@ -213,7 +182,7 @@ function MainApp() {
             />
           )}
 
-          <span onClick={() => { navigate('/contacto'); window.scrollTo(0, 0); }} style={{ cursor: 'pointer', fontSize: '15px', fontWeight: '500', color: window.location.pathname === '/contacto' ? '#00ff44' : '#ccc', position: 'relative', zIndex: 4000 }}>Contacto</span>
+          <span className="contacto-texto" onClick={() => { navigate('/contacto'); window.scrollTo(0, 0); }} style={{ cursor: 'pointer', fontSize: '15px', fontWeight: '500', color: window.location.pathname === '/contacto' ? '#00ff44' : '#ccc', position: 'relative', zIndex: 4000 }}>Contacto</span>
 
           {/* BOTÓN Y MENÚ DE UBICACIÓN */}
           <div style={{ position: 'relative', zIndex: 4000 }}>
@@ -221,29 +190,31 @@ function MainApp() {
 
             {mostrarUbicaciones && (
               <div style={{ position: 'absolute', top: '40px', right: '-50px', backgroundColor: '#1f1f1f', border: '1px solid #333', borderRadius: '8px', padding: '15px', width: '90vw', maxWidth: '280px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                <h4 style={{ margin: '0 0 15px 0', color: '#fff', borderBottom: '1px solid #333', paddingBottom: '10px' }}>Nuestras Sucursales</h4>
-
-                <div style={{ marginBottom: '15px' }}>
-                  <strong style={{ color: '#00ff44', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <MapPin size={16} /> Sucursal Principal
-                  </strong>
-                  <p style={{ margin: '5px 0 10px 0', fontSize: '13px', color: '#aaa' }}>Dirección a definir<br />Horarios de atención</p>
-                  <button onClick={() => window.open('https://maps.google.com', '_blank')} style={{ width: '100%', backgroundColor: '#222', color: '#fff', border: '1px solid #444', padding: '6px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
-                    Ver en Google Maps
-                  </button>
-                </div>
-
-                <div>
-                  <strong style={{ color: '#00ff44', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <MapPin size={16} /> Sucursal 2 (Opcional)
-                  </strong>
-                  <p style={{ margin: '5px 0 10px 0', fontSize: '13px', color: '#aaa' }}>Dirección a definir<br />Horarios de atención</p>
-                  <button onClick={() => window.open('https://maps.google.com', '_blank')} style={{ width: '100%', backgroundColor: '#222', color: '#fff', border: '1px solid #444', padding: '6px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
-                    Ver en Google Maps
-                  </button>
-                </div>
-
+                <h4 style={{ margin: '0 0 15px 0', color: '#fff', borderBottom: '1px solid #333', paddingBottom: '10px' }}>Nuestra Tienda</h4>
                 
+                <div style={{ marginBottom: '5px' }}>
+                  <strong style={{ color: '#00ff44', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <MapPin size={16} /> Kiru Tech Principal
+                  </strong>
+                  
+                  {/* REEMPLAZA ESTE TEXTO CON LA DIRECCIÓN QUE TE PASARON */}
+                  <p style={{ margin: '5px 0 10px 0', fontSize: '13px', color: '#aaa' }}>
+                    Avenida Medardo Chávez 439, Riberalta<br />Atención: Lunes a Sábado
+                  </p>
+                  
+                  {/* REEMPLAZA EL LINK DE GOOGLE MAPS AQUÍ */}
+                  {/* ENLACE OPTIMIZADO PARA MÓVILES */}
+                  {/* ENLACE UNIVERSAL GOOGLE MAPS */}
+                  <a 
+                    href="https://www.google.com/maps/search/?api=1&query=Avenida+Medardo+Chávez+439,+Riberalta" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    style={{ display: 'block', textAlign: 'center', width: '100%', backgroundColor: '#222', color: '#fff', border: '1px solid #444', padding: '6px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', textDecoration: 'none', boxSizing: 'border-box' }}
+                  >
+                    Ver ubicación en GPS
+                  </a>
+                    
+                </div>
               </div>
             )}
           </div>
@@ -319,7 +290,7 @@ function MainApp() {
         </div>
       </header>
 
-      {/* NUEVO MENÚ LATERAL ENRUTADOR */}
+      {/* MENÚ LATERAL ENRUTADOR */}
       {mostrarMenu && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 4000, display: 'flex' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setMostrarMenu(false)}></div>
@@ -330,7 +301,6 @@ function MainApp() {
             </div>
             <div style={{ padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {categorias.map((cat, index) => {
-                // Usamos el signo + con comillas simples normales para evitar errores de sintaxis
                 const rutaSegura = '/categoria/' + encodeURIComponent(cat);
 
                 return (
@@ -362,7 +332,6 @@ function MainApp() {
       <Routes>
         <Route path="/" element={<Home busqueda={busqueda} setBusqueda={setBusqueda} productosFiltradosPorBusqueda={productosFiltradosPorBusqueda} productos={productos} agregarAlCarrito={agregarAlCarrito} />} />
         <Route path="/contacto" element={<Contacto />} />
-        {/* NUEVA RUTA DINÁMICAA */}
         <Route path="/categoria/:id" element={<Categoria productos={productos} agregarAlCarrito={agregarAlCarrito} />} />
         <Route path="/producto/:id" element={<ProductoDetalle productos={productos} agregarAlCarrito={agregarAlCarrito} />} />
         <Route path="/login" element={session ? <Navigate to="/admin" /> : <Login />} />
@@ -390,10 +359,11 @@ function MainApp() {
         </div>
       )}
 
-{/* FOOTER OFICIAL KIRU TECH */}
       <footer style={{ borderTop: '1px solid #222', padding: '30px 20px', textAlign: 'center', color: '#888', marginTop: '40px', backgroundColor: '#0a0a0a' }}>
-        <p style={{ margin: '0 0 8px 0', fontSize: '15px' }}>© 2026 Kiru Tech. Todos los derechos reservados.</p>
-        <p style={{ fontSize: '13px', margin: 0, color: '#555' }}>Hardware sin límites - Importadores Directos</p>
+        <p style={{ margin: '0 0 8px 0', fontSize: '15px' }}>
+          © <span onClick={() => { window.scrollTo(0, 0); navigate('/login'); }} style={{ cursor: 'pointer' }}>2026</span> Kiru Tech. Todos los derechos reservados.
+        </p>
+        <p style={{ fontSize: '13px', margin: 0, color: '#555' }}>Hardware sin límites - Importadores directos de Perú y Brasil</p>
       </footer>
 
     </div>

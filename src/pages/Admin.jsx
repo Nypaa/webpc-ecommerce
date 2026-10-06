@@ -178,7 +178,19 @@ export default function Admin({ productos, recargarProductos }) {
               <input 
                 type="file" 
                 accept="image/*" 
-                onChange={(e) => setImagenArchivo(e.target.files[0])}
+                onChange={(e) => {
+                  const archivo = e.target.files[0];
+                  if (archivo) {
+                    // CANDADO DE SEGURIDAD: Límite de 1MB (1024 * 1024 bytes)
+                    if (archivo.size > 1024 * 1024) {
+                      alert("⚠️ La imagen es demasiado pesada. El límite máximo es de 1MB para que la tienda mantenga su velocidad. Por favor, usa una imagen más ligera.");
+                      e.target.value = ''; // Resetea el input para que no lo guarde
+                      setImagenArchivo(null);
+                    } else {
+                      setImagenArchivo(archivo); // Pasa la prueba, se guarda
+                    }
+                  }
+                }}
                 style={{ display: 'none' }} 
               />
             </label>

@@ -9,3 +9,69 @@ body, html {
 *, *::before, *::after {
   box-sizing: inherit;
 }
+
+/* =========================================
+   HEADER RESPONSIVE KIRU TECH
+========================================= */
+.header-principal {
+  position: sticky; 
+  top: 0; 
+  z-index: 3000;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between;
+  padding: 15px 30px; 
+  background-color: #141414; 
+  border-bottom: 1px solid #222;
+  flex-wrap: wrap; /* Permite crear la segunda fila en celulares */
+  gap: 15px;
+}
+
+.header-logo { 
+  display: flex; 
+  align-items: center; 
+  gap: 20px; 
+  order: 1; 
+}
+
+.header-buscador {
+  display: flex; 
+  align-items: center; 
+  background-color: #1f1f1f;
+  border-radius: 8px; 
+  padding: 8px 15px; 
+  border: 1px solid #333;
+  flex: 1; 
+  max-width: 550px; /* Límite para que no se estire demasiado en PC */
+  margin: 0 auto;   /* La centra perfectamente en el espacio disponible */
+  min-width: 300px; 
+  order: 2; 
+}
+.header-iconos { 
+  display: flex; 
+  align-items: center; 
+  gap: 25px; 
+  order: 3; 
+}
+
+/* LA MAGIA SOLO PARA CELULARES */
+@media (max-width: 768px) {
+  .header-principal { 
+    padding: 15px; 
+  }
+  .header-logo h2 { 
+    font-size: 20px !important; 
+  }
+  .header-iconos { 
+    gap: 15px; 
+  }
+  .contacto-texto { 
+    font-size: 14px !important; 
+  }
+  
+  .header-buscador {
+    order: 4; /* Manda el buscador a la fila de abajo */
+    min-width: 100%;
+    margin-top: 5px;
+  }
+}
