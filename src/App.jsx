@@ -59,7 +59,7 @@ function MainApp() {
 
   const categorias = [
     "Procesadores", "Tarjetas Gráficas", "Placas Madre", "Memoria RAM",
-    "Almacenamiento", "Fuentes de Poder", "Case / Gabinetes", "Monitores", "Periféricos"
+    "Almacenamiento", "Fuentes de Poder", "Case / Gabinetes", "Monitores", "Periféricos", "Combos", "Otros"
   ];
 
   const productosFiltradosPorBusqueda = productos.filter((producto) => {

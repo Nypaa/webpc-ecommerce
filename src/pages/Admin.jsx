@@ -20,8 +20,11 @@ export default function Admin({ productos, recargarProductos }) {
     nombre: '', marca: '', categoria: 'Procesadores', precio: '', estado_stock: 'Disponible', imagen_url: '', descripcion: ''
   });
 
-  const categorias = ["Procesadores", "Tarjetas Gráficas", "Placas Madre", "Memoria RAM", "Almacenamiento", "Fuentes de Poder", "Case / Gabinetes", "Monitores", "Periféricos"];
-
+ const categorias = [
+    "Procesadores", "Tarjetas Gráficas", "Placas Madre", "Memoria RAM",
+    "Almacenamiento", "Fuentes de Poder", "Case / Gabinetes", "Monitores", "Periféricos", "Combos", "Otros"
+  ];
+  
   const cerrarSesion = async () => {
     await supabase.auth.signOut();
     navigate('/login');
