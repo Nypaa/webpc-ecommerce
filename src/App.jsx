@@ -127,7 +127,7 @@ function MainApp() {
 
   const enviarWhatsApp = () => {
     if (carrito.length === 0) return;
-    const numeroTienda = "59173048045";
+    const numeroTienda = "59178777504";
     const lineas = [];
     if (nombreCliente.trim() !== '') lineas.push("Hola, soy *" + nombreCliente + "*. Me interesa concretar la compra de la siguiente cotización:");
     else lineas.push("Hola, me interesa concretar la compra de la siguiente cotización:");
