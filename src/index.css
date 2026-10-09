@@ -1,3 +1,14 @@
+:root {
+  /* ========================================= */
+  /* PALETA DE METAL PARA LAS TARJETAS         */
+  /* ========================================= */
+  /* Mismo degradado plomo plateado con textura que usamos en el Header */
+  --fondo-metalico: linear-gradient(rgba(38, 42, 45, 0.88), rgba(20, 22, 24, 0.95)), url("https://www.transparenttextures.com/patterns/brushed-alum-dark.png") #1e2124;
+  
+  /* Borde sutil para que la tarjeta no se funda con el fondo negro de la web */
+  --borde-metalico: #363b40;
+}
+
 /* Reseteo global del navegador */
 body, html {
   margin: 0;
@@ -10,68 +21,85 @@ body, html {
   box-sizing: inherit;
 }
 
-/* =========================================
-   HEADER RESPONSIVE KIRU TECH
-========================================= */
-.header-principal {
-  position: sticky; 
-  top: 0; 
-  z-index: 3000;
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between;
-  padding: 15px 30px; 
-  background-color: #141414; 
-  border-bottom: 1px solid #222;
-  flex-wrap: wrap; /* Permite crear la segunda fila en celulares */
-  gap: 15px;
+/* ========================================= */
+/* ORDEN DEL HEADER RESPONSIVE (MÓVIL VS PC) */
+/* ========================================= */
+.header-buscador-responsive {
+  order: 2;
+}
+.header-iconos-responsive {
+  order: 3;
 }
 
-.header-logo { 
-  display: flex; 
-  align-items: center; 
-  gap: 20px; 
-  order: 1; 
-}
-
-.header-buscador {
-  display: flex; 
-  align-items: center; 
-  background-color: #1f1f1f;
-  border-radius: 8px; 
-  padding: 8px 15px; 
-  border: 1px solid #333;
-  flex: 1; 
-  max-width: 550px; /* Límite para que no se estire demasiado en PC */
-  margin: 0 auto;   /* La centra perfectamente en el espacio disponible */
-  min-width: 300px; 
-  order: 2; 
-}
-.header-iconos { 
-  display: flex; 
-  align-items: center; 
-  gap: 25px; 
-  order: 3; 
-}
-
-/* LA MAGIA SOLO PARA CELULARES */
 @media (max-width: 768px) {
-  .header-principal { 
-    padding: 15px; 
+  .header-contenedor {
+    padding: 10px 20px !important;
   }
-  .header-logo h2 { 
-    font-size: 20px !important; 
+  .header-iconos-responsive {
+    order: 2 !important; 
   }
-  .header-iconos { 
-    gap: 15px; 
+  .header-buscador-responsive {
+    order: 3 !important; 
+    flex-basis: 100% !important; 
+    margin-top: -15px;
   }
-  .contacto-texto { 
-    font-size: 14px !important; 
+}
+
+/* Quitar flechas del input numérico en el carrito */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ========================================= */
+/* EFECTOS PREMIUM PARA TARJETAS DE PRODUCTO */
+/* ========================================= */
+.tarjeta-producto {
+  /* Aplicamos el fondo de metal y el borde sutil */
+  background: var(--fondo-metalico) !important;
+  border: 1px solid var(--borde-metalico) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.tarjeta-producto:hover {
+  transform: translateY(-6px);
+  /* El resplandor neón verde se mantiene intacto al pasar el cursor */
+  box-shadow: 0 12px 30px rgba(0, 248, 133, 0.15) !important;
+  border-color: rgba(0, 248, 133, 0.4) !important;
+}
+
+.contenedor-imagen-producto img {
+  transition: transform 0.4s ease;
+}
+
+.tarjeta-producto:hover .contenedor-imagen-producto img {
+  transform: scale(1.08);
+}
+
+/* Efecto de encendido Neón al hacer clic en el buscador */
+.buscador-neon {
+  transition: all 0.3s ease;
+}
+
+.buscador-neon:focus {
+  border-color: #00f885 !important;
+  box-shadow: 0 0 15px rgba(0, 248, 133, 0.4) !important;
+  background-color: #050a08 !important; /* Oscurece el fondo un poco más al escribir */
+}
+
+/* En celulares ocultamos el texto y dejamos solo el icono */
+@media (max-width: 768px) {
+  .logo-texto-responsive {
+    display: block !important; /* 1. Hacemos que el texto aparezca */
+    height: 28px !important; /* 2. Tamaño de las letras en el celular */
+    margin-top: 6px !important; /* Alineación vertical para que no quede muy arriba */
   }
-  
-  .header-buscador {
-    order: 4; /* Manda el buscador a la fila de abajo */
-    min-width: 100%;
-    margin-top: 5px;
+  .logo-icono-responsive {
+    height: 65px !important; /* Tamaño de la cara del armadillo en celular */
+    margin: 0 !important; 
   }
 }

@@ -22,7 +22,7 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
       { !hayBusqueda && (
         <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', marginBottom: '40px', border: '1px solid #333', backgroundColor: '#0a0a0a' }}>
           <img 
-            src="https://dugjqlvigojxpzmhiasn.supabase.co/storage/v1/object/public/productos/kirubanner.jpg" 
+            src="https://dugjqlvigojxpzmhiasn.supabase.co/storage/v1/object/public/productos/kirubanner1.jpg" 
             alt="Banner Kiru Tech" 
             style={{ width: '100%', height: 'auto', display: 'block' }}
           />
@@ -32,7 +32,7 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
 
       <div style={{ marginBottom: '30px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0, color: '#fff', fontSize: '24px', display: 'inline-block', borderBottom: '3px solid #00ff44', paddingBottom: '10px' }}>
+          <h3 style={{ margin: 0, color: '#fff', fontSize: '24px', display: 'inline-block', borderBottom: '3px solid #00f885', paddingBottom: '10px' }}>
             {hayBusqueda ? 'Resultados de búsqueda' : 'Últimos Ingresos'}
           </h3>
           {hayBusqueda && (
@@ -80,15 +80,20 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
           <p style={{ color: '#888', gridColumn: '1 / -1' }}>No se encontraron productos.</p>
         ) : (
           productosAMostrar.map((producto) => (
-            <div key={producto.id} style={{ backgroundColor: '#141414', border: '1px solid #222', borderRadius: '10px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div 
+              key={producto.id} 
+              className="tarjeta-producto"
+              style={{ backgroundColor: '#121a1c', border: '1px solid transparent', borderRadius: '12px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }}
+            >
               <div 
                 onClick={() => navigate('/producto/' + producto.id)}
-                style={{ width: '100%', height: '200px', backgroundColor: '#1a1a1a', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '15px', overflow: 'hidden', cursor: 'pointer' }}
+                className="contenedor-imagen-producto"
+                style={{ width: '100%', height: '200px', backgroundColor: 'transparent', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '15px', overflow: 'hidden', cursor: 'pointer' }}
               >
                 {producto.imagen_url ? <img src={producto.imagen_url} alt={producto.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <Package size={48} color="#333" />}
               </div>
               <div>
-                <span style={{ fontSize: '12px', color: '#00ff44', fontWeight: 'bold', letterSpacing: '1px' }}>{producto.marca}</span>
+                <span style={{ fontSize: '12px', color: '#00f885', fontWeight: 'bold', letterSpacing: '1px' }}>{producto.marca}</span>
                 <h4 style={{ margin: '5px 0 10px 0', fontSize: '16px', color: '#fff', lineHeight: '1.4' }}>{producto.nombre}</h4>
                 <span style={{ 
                   display: 'inline-block', 
@@ -111,8 +116,8 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
                   style={{ 
                     backgroundColor: producto.estado_stock === 'Agotado' ? '#222' : 'transparent', 
                     border: '1px solid', 
-                    borderColor: producto.estado_stock === 'Agotado' ? '#333' : '#00ff44', 
-                    color: producto.estado_stock === 'Agotado' ? '#555' : '#00ff44', 
+                    borderColor: producto.estado_stock === 'Agotado' ? '#333' : '#00f885', 
+                    color: producto.estado_stock === 'Agotado' ? '#555' : '#00f885', 
                     padding: '8px 12px', 
                     borderRadius: '6px', 
                     cursor: producto.estado_stock === 'Agotado' ? 'not-allowed' : 'pointer', 
