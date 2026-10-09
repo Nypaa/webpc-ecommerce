@@ -13,7 +13,7 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
 
   const vitrinaEscaparate = productos
     .filter(p => filtroLocal === 'Todas' || p.categoria === filtroLocal)
-    .slice(0, 12);
+    .slice(0, 20);
 
   const productosAMostrar = hayBusqueda ? productosFiltradosPorBusqueda : vitrinaEscaparate;
 
@@ -85,28 +85,64 @@ export default function Home({ busqueda, setBusqueda, productosFiltradosPorBusqu
               className="tarjeta-producto"
               style={{ backgroundColor: '#121a1c', border: '1px solid transparent', borderRadius: '12px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }}
             >
-              <div 
+             <div 
                 onClick={() => navigate('/producto/' + producto.id)}
                 className="contenedor-imagen-producto"
-                style={{ width: '100%', height: '200px', backgroundColor: 'transparent', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '15px', overflow: 'hidden', cursor: 'pointer' }}
+                style={{ 
+                  width: '100%', 
+                  height: '200px', 
+                  backgroundColor: 'transparent', /* 1. Volvemos a tu fondo original oscuro/transparente */
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  marginBottom: '15px', 
+                  cursor: 'pointer' 
+                  /* Nota: Ya no hay overflow ni borderRadius en este contenedor */
+                }}
               >
-                {producto.imagen_url ? <img src={producto.imagen_url} alt={producto.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <Package size={48} color="#333" />}
+                {producto.imagen_url ? (
+                  <img 
+                    src={producto.imagen_url} 
+                    alt={producto.nombre} 
+                    style={{ 
+                      maxWidth: '100%',     /* 2. EL TRUCO: Solo usa el máximo espacio, no se fuerza al 100% */
+                      maxHeight: '100%',    /* 3. La imagen dictará su propio tamaño natural */
+                      borderRadius: '8px',  /* 4. Curvamos directamente los píxeles de la imagen */
+                      objectFit: 'contain'
+                    }} 
+                  />
+                ) : (
+                  <Package size={48} color="#555" /> /* Cambié el gris a #555 para que resalte un poco más sin fondo */
+                )}
               </div>
-              <div>
-                <span style={{ fontSize: '12px', color: '#00f885', fontWeight: 'bold', letterSpacing: '1px' }}>{producto.marca}</span>
-                <h4 style={{ margin: '5px 0 10px 0', fontSize: '16px', color: '#fff', lineHeight: '1.4' }}>{producto.nombre}</h4>
-                <span style={{ 
-                  display: 'inline-block', 
-                  padding: '3px 8px', 
-                  borderRadius: '4px', 
-                  fontSize: '11px', 
-                  fontWeight: 'bold', 
-                  backgroundColor: producto.estado_stock === 'Disponible' ? 'rgba(0, 255, 85, 0.1)' : producto.estado_stock === 'Poco Stock' ? 'rgba(255, 170, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)', 
-                  color: producto.estado_stock === 'Disponible' ? '#00ff55' : producto.estado_stock === 'Poco Stock' ? '#ffaa00' : '#ff4444', 
-                  marginBottom: '15px' 
-                }}>
-                  {producto.estado_stock}
-                </span>
+              <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                
+                {/* 1. MARCA (Alineada a la derecha) */}
+                <div style={{ textAlign: 'right', marginBottom: '5px' }}>
+                  <span style={{ fontSize: '12px', color: '#00f885', fontWeight: 'bold', letterSpacing: '1px' }}>
+                    {producto.marca}
+                  </span>
+                </div>
+
+                {/* NOMBRES DEL PRODUCTO */}
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#fff', lineHeight: '1.4' }}>
+                  {producto.nombre}
+                </h4>
+
+                {/* 2. ESTADO DEL STOCK (Centrado) */}
+                <div style={{ display: 'flex', justifyContent: 'left', marginBottom: '15px', marginTop: 'auto' }}>
+                  <span style={{ 
+                    display: 'inline-block', 
+                    padding: '3px 8px', 
+                    borderRadius: '4px', 
+                    fontSize: '11px', 
+                    fontWeight: 'bold', 
+                    backgroundColor: producto.estado_stock === 'Disponible' ? 'rgba(0, 255, 85, 0.1)' : producto.estado_stock === 'Poco Stock' ? 'rgba(255, 170, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)', 
+                    color: producto.estado_stock === 'Disponible' ? '#00ff55' : producto.estado_stock === 'Poco Stock' ? '#ffaa00' : '#ff4444' 
+                  }}>
+                    {producto.estado_stock}
+                  </span>
+                </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
                 <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#fff' }}>Bs. {producto.precio}</span>

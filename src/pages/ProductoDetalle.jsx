@@ -33,7 +33,7 @@ export default function ProductoDetalle({ productos, agregarAlCarrito }) {
         {/* Redujimos el ancho base a 280px para que encaje perfecto en celulares pequeños sin desbordar */}
         <div style={{ flex: '1 1 280px', backgroundColor: '#1a1a1a', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'clamp(250px, 40vh, 400px)', padding: '20px' }}>
           {producto.imagen_url ? (
-            <img src={producto.imagen_url} alt={producto.nombre} style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain' }} />
+            <img src={producto.imagen_url} alt={producto.nombre} style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain', borderRadius: '8px' }} />
           ) : (
             <Package size={100} color="#333" />
           )}

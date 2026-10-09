@@ -156,7 +156,7 @@ function MainApp() {
   };
 
   return (
-    <div style={{ backgroundColor: '#0a0a0a', color: '#ffffff', minHeight: '100vh', margin: 0, fontFamily: 'system-ui, sans-serif' }}>
+    <div style={{ backgroundColor: '#0a0a0a', color: '#ffffff', minHeight: '100vh', margin: 0, fontFamily: '"Rajdhani", sans-serif' }}>
 
       {/* HEADER PERFECTAMENTE ESTRUCTURADO Y PROTEGIDO */}
       {/* HEADER PERFECTAMENTE ESTRUCTURADO Y PROTEGIDO */}
