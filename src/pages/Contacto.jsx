@@ -3,7 +3,7 @@ import { MapPin, MessageCircle, ThumbsUp } from 'lucide-react';
 export default function Contacto() {
   // Datos de la sucursal (Mantenemos tu lógica original segura)
   const sucursal = {
-    nombre: "KiruTech - Tienda Principal",
+    nombre: "Kirugit add .Tech - Tienda Principal",
     direccion: "Avenida Medardo Chávez 439, Riberalta",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=Avenida+Medardo+Chávez+439,+Riberalta",
     vendedor: { nombre: "Ventas y Cotizaciones", numero: "59178777504" }
